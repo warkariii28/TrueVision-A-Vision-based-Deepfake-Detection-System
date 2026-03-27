@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Image{% endblock %}
+
+{% block content %}
+<section class="row g-4">
+    <div class="col-lg-5">
+        <div class="tv-panel h-100">
+            <div class="tv-kicker mb-3">Image Check</div>
+            <h1 class="tv-section-title mb-3">Upload a face image to check if it may be fake.</h1>
+            <p class="tv-muted mb-4">
+                Choose a PNG, JPG, or JPEG image. The app checks image quality first, then gives you a result with a simple explanation.
+            </p>
+
+            <div class="tv-info-list">
+                <div class="tv-info-item">
+                    <div class="tv-info-icon"><i class="bi bi-image"></i></div>
+                    <div>
+                        <div class="fw-semibold">Accepted formats</div>
+                        <div class="tv-muted small">PNG, JPG, JPEG</div>
+                    </div>
+                </div>
+                <div class="tv-info-item">
+                    <div class="tv-info-icon"><i class="bi bi-aspect-ratio"></i></div>
+                    <div>
+                        <div class="fw-semibold">Recommended input</div>
+                        <div class="tv-muted small">A clear face image with good lighting and enough sharpness.</div>
+                    </div>
+                </div>
+                <div class="tv-info-item">
+                    <div class="tv-info-icon"><i class="bi bi-cpu"></i></div>
+                    <div>
+                        <div class="fw-semibold">Please wait a little</div>
+                        <div class="tv-muted small">The check can take some time because the model loads and then studies the image.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="tv-panel">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                <div>
+                    <div class="tv-pill mb-2"><i class="bi bi-cloud-arrow-up"></i> Upload Area</div>
+                    <h2 class="fw-bold mb-1">Choose or drag your image</h2>
+                    <p class="tv-muted mb-0">Images above 5 MB are blocked before upload.</p>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div id="dragDropArea" class="tv-upload-zone mb-3" role="button" tabindex="0">
+                    <div class="display-6 mb-3 text-primary"><i class="bi bi-cloud-upload"></i></div>
+                    <h3 class="h5 fw-bold">Drop an image here</h3>
+                    <p class="tv-muted mb-0">or click to browse from your device</p>
+                </div>
+
+                <input type="file" id="formFile" name="file" accept=".png,.jpg,.jpeg" hidden>
+                <div id="fileErrorMessage" class="text-danger small mb-3 d-none"></div>
+
+                <div id="imagePreviewContainer" class="tv-preview mb-4 d-none">
+                    <img id="imagePreview" alt="Image preview">
+                </div>
+
+                <div class="progress mb-4 d-none" id="progressContainer" style="height: 0.9rem;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="uploadProgress" role="progressbar" style="width: 0%;"></div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <button type="submit" class="btn btn-tv-primary btn-lg px-4" id="uploadBtn">Check Image</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-tv-soft btn-lg px-4">Back to Home</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    const formFile = document.getElementById("formFile");
+    const dragDropArea = document.getElementById("dragDropArea");
+    const previewContainer = document.getElementById("imagePreviewContainer");
+    const previewImage = document.getElementById("imagePreview");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileErrorMessage = document.getElementById("fileErrorMessage");
+    const progressContainer = document.getElementById("progressContainer");
+    const uploadProgress = document.getElementById("uploadProgress");
+
+    function showPreview(file) {
+        if (!file) {
+            previewContainer.classList.add("d-none");
+            previewImage.removeAttribute("src");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            previewImage.src = event.target.result;
+            previewContainer.classList.remove("d-none");
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function validateFile(file) {
+        if (!file) {
+            fileErrorMessage.classList.add("d-none");
+            uploadBtn.disabled = false;
+            return true;
+        }
+
+        if (file.size > 5242880) {
+            fileErrorMessage.textContent = "File size exceeds 5 MB. Please upload a smaller image.";
+            fileErrorMessage.classList.remove("d-none");
+            uploadBtn.disabled = true;
+            return false;
+        }
+
+        fileErrorMessage.classList.add("d-none");
+        uploadBtn.disabled = false;
+        return true;
+    }
+
+    dragDropArea.addEventListener("click", () => formFile.click());
+    dragDropArea.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            formFile.click();
+        }
+    });
+
+    formFile.addEventListener("change", () => {
+        const file = formFile.files[0];
+        if (validateFile(file)) {
+            showPreview(file);
+        }
+    });
+
+    dragDropArea.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dragDropArea.classList.add("dragging");
+    });
+
+    dragDropArea.addEventListener("dragleave", (event) => {
+        event.preventDefault();
+        dragDropArea.classList.remove("dragging");
+    });
+
+    dragDropArea.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dragDropArea.classList.remove("dragging");
+        const file = event.dataTransfer.files[0];
+        formFile.files = event.dataTransfer.files;
+        if (validateFile(file)) {
+            showPreview(file);
+        }
+    });
+
+    document.getElementById("uploadForm").addEventListener("submit", () => {
+        progressContainer.classList.remove("d-none");
+        uploadProgress.style.width = "100%";
+        uploadProgress.setAttribute("aria-valuenow", "100");
+    });
+</script>
+{% endblock %}

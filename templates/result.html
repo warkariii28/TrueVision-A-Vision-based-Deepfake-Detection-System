@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result{% endblock %}
+
+{% block content %}
+<section class="row g-4">
+    <div class="col-12">
+        <div class="tv-panel">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div>
+                    <div class="tv-kicker mb-2">Image Check Result</div>
+                    <h1 class="tv-section-title mb-2">Your result is ready</h1>
+                    <p class="tv-muted mb-0">See the result, confidence score, simple explanation, and give feedback if you want.</p>
+                </div>
+                <div class="text-end">
+                    <div class="tv-result-badge {% if prediction == 'Fake' %}tv-result-fake{% else %}tv-result-real{% endif %}">
+                        <i class="bi {% if prediction == 'Fake' %}bi-exclamation-triangle{% else %}bi-check-circle{% endif %}"></i>
+                        {{ prediction }}
+                    </div>
+                    <div class="mt-3">
+                            <div class="small text-uppercase text-secondary fw-semibold mb-2">Confidence</div>
+                        <div class="fw-bold fs-4">{{ confidence|round(2) }}%</div>
+                        <div class="tv-meter mt-2" style="width: 220px;">
+                            <span style="width: {{ confidence|round(2) }}%;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="tv-panel h-100">
+            <h2 class="h4 fw-bold mb-3">Your Uploaded Image</h2>
+            {% if image_path %}
+                <div class="tv-preview">
+                    <img src="{{ url_for('static', filename=image_path) }}" alt="Original image">
+                </div>
+            {% else %}
+                <div class="alert alert-warning mb-0">No original image is available for this result.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="tv-panel h-100">
+            <h2 class="h4 fw-bold mb-3">Highlighted Areas</h2>
+            {% if gradcam_path %}
+                <div class="tv-preview">
+                    <img src="{{ url_for('static', filename=gradcam_path) }}" alt="Grad-CAM heatmap">
+                </div>
+            {% else %}
+                <div class="alert alert-warning mb-0">No Grad-CAM heatmap was generated.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="tv-panel h-100">
+            <div class="tv-pill mb-3"><i class="bi bi-search"></i> Simple Explanation</div>
+            <h2 class="h4 fw-bold mb-3">Why the system gave this result</h2>
+            {% if explanation %}
+                <p class="tv-muted mb-4" style="white-space: pre-wrap;">{{ explanation }}</p>
+                <div class="alert {% if prediction == 'Fake' %}alert-warning{% else %}alert-success{% endif %} mb-0">
+                    <strong>Recommendation:</strong> {{ recommendation }}
+                </div>
+            {% else %}
+                <div class="alert alert-warning mb-0">No detailed explanation is available for this result.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="tv-panel h-100">
+            <div class="tv-pill mb-3"><i class="bi bi-chat-left-text"></i> Your Feedback</div>
+            <h2 class="h4 fw-bold mb-3">Was this result helpful?</h2>
+            <p class="tv-muted">Choose a simple option below so your saved results remain useful later.</p>
+
+            {% if result_id %}
+                <form method="POST" action="{{ url_for('submit_feedback') }}">
+                    <input type="hidden" name="result_id" value="{{ result_id }}">
+                    <div class="d-grid gap-3">
+                        <button type="submit" name="feedback" value="Satisfied" class="btn btn-outline-success btn-lg">
+                            <i class="bi bi-hand-thumbs-up me-2"></i>Helpful
+                        </button>
+                        <button type="submit" name="feedback" value="Unsatisfied" class="btn btn-outline-danger btn-lg">
+                            <i class="bi bi-hand-thumbs-down me-2"></i>Not Helpful
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+
+            <div class="d-grid gap-3 mt-4">
+                <a href="{{ url_for('upload') }}" class="btn btn-tv-primary btn-lg">Check Another Image</a>
+                <a href="{{ url_for('my_results') }}" class="btn btn-tv-soft btn-lg">See My Results</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

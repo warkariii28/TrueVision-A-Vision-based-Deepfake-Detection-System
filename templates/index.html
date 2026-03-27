@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="tv-panel tv-hero mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <div class="tv-kicker mb-3">Simple Deepfake Check</div>
+            <h1 class="tv-display mb-3">Check an image with a calm, clear, user-friendly workflow.</h1>
+            <p class="tv-subtext mb-4">
+                TRUEVISION helps you upload an image, see the result clearly, and understand why the system made that decision.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('upload') }}" class="btn btn-tv-primary btn-lg px-4">Check an Image</a>
+                    <a href="{{ url_for('my_results') }}" class="btn btn-tv-soft btn-lg px-4">See My Results</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-tv-primary btn-lg px-4">Get Started</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-tv-soft btn-lg px-4">Create Account</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="tv-card p-4 h-100">
+                <div class="tv-pill mb-3">
+                    <i class="bi bi-shield-check"></i>
+                    {% if current_user.is_authenticated %}
+                        Welcome back, {{ current_user.username }}
+                    {% else %}
+                        Secure Media Review
+                    {% endif %}
+                </div>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="tv-stat">
+                            <div class="tv-stat-label mb-2">Step 1</div>
+                            <div class="tv-stat-value">Upload</div>
+                            <div class="tv-muted small">Choose an image and submit it in one place.</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="tv-stat">
+                            <div class="tv-stat-label mb-2">Step 2</div>
+                            <div class="tv-stat-value">Result</div>
+                            <div class="tv-muted small">See whether the image looks real or fake.</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="tv-stat">
+                            <div class="tv-stat-label mb-2">Step 3</div>
+                            <div class="tv-stat-value">Reasoning</div>
+                            <div class="tv-muted small">View the highlighted image areas and explanation.</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="tv-stat">
+                            <div class="tv-stat-label mb-2">Step 4</div>
+                            <div class="tv-stat-value">History</div>
+                            <div class="tv-muted small">Come back later and review your previous checks.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="row g-4">
+    <div class="col-lg-4">
+        <div class="tv-card p-4 h-100">
+            <div class="tv-info-icon mb-3"><i class="bi bi-cloud-arrow-up"></i></div>
+            <h2 class="h4 fw-bold">1. Upload Your Image</h2>
+            <p class="tv-muted mb-0">Use a clear face image in PNG or JPG format. The app checks image quality before it continues.</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="tv-card p-4 h-100">
+            <div class="tv-info-icon mb-3"><i class="bi bi-bar-chart-line"></i></div>
+            <h2 class="h4 fw-bold">2. Read the Result</h2>
+            <p class="tv-muted mb-0">See the result, confidence score, original image, and highlighted heatmap in a single easy-to-read screen.</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="tv-card p-4 h-100">
+            <div class="tv-info-icon mb-3"><i class="bi bi-chat-square-text"></i></div>
+            <h2 class="h4 fw-bold">3. Save Your Review</h2>
+            <p class="tv-muted mb-0">Give simple feedback so your result history stays useful and easy to revisit later.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
