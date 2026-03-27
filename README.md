@@ -112,6 +112,25 @@ If you are publishing to GitHub, keep large `.pth` files out of the repo and use
 
 The model report page compares accuracy, precision, recall, F1 score, and other metrics. It also provides a confusion matrix and a classic comparison table for easier understanding.
 
+## Screenshots
+Home  
+![Home](docs/home.png)
+
+Login
+![Login](docs/login.png)
+
+Register
+![Login](docs/register.png)
+
+Upload  
+![Upload](docs/upload.png)
+
+Upload-check
+![Upload](docs/upload-check.png)
+
+Result  
+![Result](docs/result.png)
+
 ## Troubleshooting
 
 - First run may take longer because the model loads into memory.
